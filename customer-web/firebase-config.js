@@ -1,3 +1,0 @@
-window.ZAHLIVERY_FIREBASE_CONFIG = null;
-
-window.ZAHLIVERY_WEB_SETTINGS = {};
