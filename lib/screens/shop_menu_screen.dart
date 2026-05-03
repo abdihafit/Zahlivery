@@ -77,14 +77,112 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
           });
 
           if (docs.isEmpty) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text(
-                  'This shop has not added a menu yet.',
-                  textAlign: TextAlign.center,
+            final profileImages = <String>[
+              if ((widget.shop.bannerImageUrl ?? '').trim().isNotEmpty)
+                widget.shop.bannerImageUrl!.trim(),
+              ...widget.shop.galleryImageUrls,
+            ];
+
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                if (profileImages.isNotEmpty) ...[
+                  SizedBox(
+                    height: 220,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: profileImages.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 10),
+                      itemBuilder: (context, index) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 10,
+                            child: Image.network(
+                              profileImages[index],
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (_, _, _) => Container(
+                                    color: const Color(0xFFF1F4EC),
+                                    alignment: Alignment.center,
+                                    child: const Icon(
+                                      Icons.storefront_outlined,
+                                      size: 36,
+                                      color: Color(0xFF557A1F),
+                                    ),
+                                  ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.shop.businessName ?? widget.shop.name,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Category: ${widget.shop.businessCategory ?? 'Business'}',
+                        ),
+                        Text('Contact: ${widget.shop.phone}'),
+                        Text('Address: ${widget.shop.address ?? '-'}'),
+                        if ((widget.shop.serviceDescription ?? '')
+                            .trim()
+                            .isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          Text(widget.shop.serviceDescription!),
+                        ],
+                        const SizedBox(height: 16),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF6F8F2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            'This business has not uploaded a menu yet. You can still contact them through chat to ask about products, bookings, or services.',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => CustomerChatScreen(
+                                        currentUser: _currentUserWithUid(
+                                          _signedInUid ?? widget.customer.uid,
+                                        ),
+                                        hotelUser: widget.shop,
+                                        chatTitle:
+                                            widget.shop.businessName ??
+                                            widget.shop.name,
+                                      ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.chat_bubble_outline),
+                            label: const Text('Chat Business'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             );
           }
 
@@ -122,14 +220,15 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                     return Card(
                       child: InkWell(
                         borderRadius: BorderRadius.circular(12),
-                        onTap: () => _showMenuItemDetails(
-                          itemId: doc.id,
-                          name: name,
-                          description: description,
-                          price: price,
-                          imageUrls: imageUrls,
-                          fallbackImageUrl: imageUrl,
-                        ),
+                        onTap:
+                            () => _showMenuItemDetails(
+                              itemId: doc.id,
+                              name: name,
+                              description: description,
+                              price: price,
+                              imageUrls: imageUrls,
+                              fallbackImageUrl: imageUrl,
+                            ),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Column(
@@ -145,14 +244,16 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                                 children: [
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           name,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium
-                                              ?.copyWith(fontWeight: FontWeight.w700),
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text('KSH ${price.toStringAsFixed(2)}'),
@@ -168,7 +269,10 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                                           const SizedBox(height: 4),
                                           Text(
                                             '${imageUrls.length} photos available',
-                                            style: Theme.of(context).textTheme.bodySmall,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.bodySmall,
                                           ),
                                         ],
                                       ],
@@ -176,14 +280,15 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   TextButton(
-                                    onPressed: () => _showMenuItemDetails(
-                                      itemId: doc.id,
-                                      name: name,
-                                      description: description,
-                                      price: price,
-                                      imageUrls: imageUrls,
-                                      fallbackImageUrl: imageUrl,
-                                    ),
+                                    onPressed:
+                                        () => _showMenuItemDetails(
+                                          itemId: doc.id,
+                                          name: name,
+                                          description: description,
+                                          price: price,
+                                          imageUrls: imageUrls,
+                                          fallbackImageUrl: imageUrl,
+                                        ),
                                     child: const Text('View'),
                                   ),
                                 ],
@@ -192,9 +297,10 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                               Row(
                                 children: [
                                   IconButton(
-                                    onPressed: qty == 0
-                                        ? null
-                                        : () => _changeQty(doc.id, qty - 1),
+                                    onPressed:
+                                        qty == 0
+                                            ? null
+                                            : () => _changeQty(doc.id, qty - 1),
                                     icon: const Icon(
                                       Icons.remove_circle_outline,
                                     ),
@@ -206,10 +312,9 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                                     ),
                                   ),
                                   IconButton(
-                                    onPressed: () => _changeQty(doc.id, qty + 1),
-                                    icon: const Icon(
-                                      Icons.add_circle_outline,
-                                    ),
+                                    onPressed:
+                                        () => _changeQty(doc.id, qty + 1),
+                                    icon: const Icon(Icons.add_circle_outline),
                                   ),
                                 ],
                               ),
@@ -282,9 +387,12 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
     required List<String> imageUrls,
     required String fallbackImageUrl,
   }) async {
-    final galleryImages = imageUrls.isNotEmpty
-        ? imageUrls
-        : (fallbackImageUrl.isEmpty ? const <String>[] : [fallbackImageUrl]);
+    final galleryImages =
+        imageUrls.isNotEmpty
+            ? imageUrls
+            : (fallbackImageUrl.isEmpty
+                ? const <String>[]
+                : [fallbackImageUrl]);
 
     await showModalBottomSheet<void>(
       context: context,
@@ -304,9 +412,8 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                     children: [
                       Text(
                         name,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -340,11 +447,14 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                                   galleryImages[index],
                                   fit: BoxFit.cover,
                                   width: double.infinity,
-                                  errorBuilder: (_, _, _) => Container(
-                                    color: const Color(0x11000000),
-                                    alignment: Alignment.center,
-                                    child: const Icon(Icons.broken_image_outlined),
-                                  ),
+                                  errorBuilder:
+                                      (_, _, _) => Container(
+                                        color: const Color(0x11000000),
+                                        alignment: Alignment.center,
+                                        child: const Icon(
+                                          Icons.broken_image_outlined,
+                                        ),
+                                      ),
                                 ),
                               );
                             },
@@ -354,17 +464,22 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(galleryImages.length, (index) {
+                            children: List.generate(galleryImages.length, (
+                              index,
+                            ) {
                               final selected = index == currentPage;
                               return AnimatedContainer(
                                 duration: const Duration(milliseconds: 180),
-                                margin: const EdgeInsets.symmetric(horizontal: 3),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 3,
+                                ),
                                 width: selected ? 18 : 8,
                                 height: 8,
                                 decoration: BoxDecoration(
-                                  color: selected
-                                      ? const Color(0xFF2E5E00)
-                                      : const Color(0x33000000),
+                                  color:
+                                      selected
+                                          ? const Color(0xFF2E5E00)
+                                          : const Color(0x33000000),
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                               );
@@ -375,9 +490,8 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'Menu details',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -389,12 +503,13 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
                       Row(
                         children: [
                           OutlinedButton.icon(
-                            onPressed: qty == 0
-                                ? null
-                                : () {
-                                    _changeQty(itemId, qty - 1);
-                                    setModalState(() {});
-                                  },
+                            onPressed:
+                                qty == 0
+                                    ? null
+                                    : () {
+                                      _changeQty(itemId, qty - 1);
+                                      setModalState(() {});
+                                    },
                             icon: const Icon(Icons.remove),
                             label: const Text('Remove'),
                           ),
@@ -562,9 +677,12 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
     required List<String> imageUrls,
     required String fallbackImageUrl,
   }) {
-    final galleryImages = imageUrls.isNotEmpty
-        ? imageUrls
-        : (fallbackImageUrl.isEmpty ? const <String>[] : [fallbackImageUrl]);
+    final galleryImages =
+        imageUrls.isNotEmpty
+            ? imageUrls
+            : (fallbackImageUrl.isEmpty
+                ? const <String>[]
+                : [fallbackImageUrl]);
 
     if (galleryImages.isEmpty) {
       return Container(
@@ -594,11 +712,12 @@ class _ShopMenuScreenState extends State<ShopMenuScreen> {
               child: Image.network(
                 imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Container(
-                  color: const Color(0x11000000),
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.broken_image_outlined),
-                ),
+                errorBuilder:
+                    (_, _, _) => Container(
+                      color: const Color(0x11000000),
+                      alignment: Alignment.center,
+                      child: const Icon(Icons.broken_image_outlined),
+                    ),
               ),
             ),
           );

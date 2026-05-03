@@ -1,0 +1,40 @@
+{
+  "name": "Zahlivery Web",
+  "short_name": "Zahlivery",
+  "description": "A shareable customer web app for browsing shops and sending orders.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#f5f7ee",
+  "theme_color": "#6dbe00",
+  "orientation": "portrait",
+  "categories": ["shopping", "business", "food"],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse shops",
+      "short_name": "Browse",
+      "description": "Open the catalog and browse businesses",
+      "url": "./#businesses",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

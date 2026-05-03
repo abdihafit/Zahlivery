@@ -18,6 +18,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _businessController = TextEditingController();
+  final _businessCategoryController = TextEditingController();
+  final _businessDescriptionController = TextEditingController();
+  final _bannerUrlController = TextEditingController();
+  final _galleryUrlsController = TextEditingController();
   final _addressController = TextEditingController();
   final _vehicleController = TextEditingController();
   final _plateController = TextEditingController();
@@ -41,6 +45,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     _emailController.dispose();
     _phoneController.dispose();
     _businessController.dispose();
+    _businessCategoryController.dispose();
+    _businessDescriptionController.dispose();
+    _bannerUrlController.dispose();
+    _galleryUrlsController.dispose();
     _addressController.dispose();
     _vehicleController.dispose();
     _plateController.dispose();
@@ -74,10 +82,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   ChoiceChip(
                     label: const Text('Customer'),
                     selected: _role == UserRole.customer,
-                    onSelected: (_) => setState(() => _role = UserRole.customer),
+                    onSelected:
+                        (_) => setState(() => _role = UserRole.customer),
                   ),
                   ChoiceChip(
-                    label: const Text('Hotel / Shop'),
+                    label: const Text('Hotel / Shop / Business'),
                     selected: _role == UserRole.hotel,
                     onSelected: (_) => setState(() => _role = UserRole.hotel),
                   ),
@@ -105,7 +114,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirm password'),
+                decoration: const InputDecoration(
+                  labelText: 'Confirm password',
+                ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) return 'Required';
                   if (value != _passwordController.text) {
@@ -136,6 +147,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         children: [
           _field(_businessController, 'Business name'),
           const SizedBox(height: 12),
+          _field(
+            _businessCategoryController,
+            'Business type (Hotel, Cosmetics, Salon, Plumbing...)',
+          ),
+          const SizedBox(height: 12),
           _field(_nameController, 'Contact person'),
           const SizedBox(height: 12),
           _field(_phoneController, 'Phone number'),
@@ -143,6 +159,25 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           _field(_emailController, 'Email address'),
           const SizedBox(height: 12),
           _field(_addressController, 'Business address'),
+          const SizedBox(height: 12),
+          _field(
+            _businessDescriptionController,
+            'What do you offer?',
+            maxLines: 3,
+          ),
+          const SizedBox(height: 12),
+          _field(
+            _bannerUrlController,
+            'Banner image URL (optional)',
+            required: false,
+          ),
+          const SizedBox(height: 12),
+          _field(
+            _galleryUrlsController,
+            'Photo URLs separated by commas (optional)',
+            required: false,
+            maxLines: 2,
+          ),
         ],
       );
     }
@@ -176,12 +211,18 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     );
   }
 
-  Widget _field(TextEditingController controller, String label) {
+  Widget _field(
+    TextEditingController controller,
+    String label, {
+    bool required = true,
+    int maxLines = 1,
+  }) {
     return TextFormField(
       controller: controller,
+      maxLines: maxLines,
       decoration: InputDecoration(labelText: label),
       validator: (value) {
-        if (value == null || value.trim().isEmpty) {
+        if (required && (value == null || value.trim().isEmpty)) {
           return 'Required';
         }
         return null;
@@ -197,20 +238,39 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     });
     try {
       final email = _emailController.text.trim();
+      final galleryUrls =
+          _galleryUrlsController.text
+              .split(',')
+              .map((url) => url.trim())
+              .where((url) => url.isNotEmpty)
+              .toList();
       final profile = AppUser(
         uid: '',
         role: _role,
         name: _nameController.text.trim(),
         email: email,
         phone: _phoneController.text.trim(),
-        address: _role == UserRole.customer || _role == UserRole.hotel
-            ? _addressController.text.trim()
-            : null,
+        address:
+            _role == UserRole.customer || _role == UserRole.hotel
+                ? _addressController.text.trim()
+                : null,
         businessName:
             _role == UserRole.hotel ? _businessController.text.trim() : null,
+        businessCategory:
+            _role == UserRole.hotel
+                ? _businessCategoryController.text.trim()
+                : null,
+        serviceDescription:
+            _role == UserRole.hotel
+                ? _businessDescriptionController.text.trim()
+                : null,
+        bannerImageUrl:
+            _role == UserRole.hotel ? _bannerUrlController.text.trim() : null,
+        galleryImageUrls: _role == UserRole.hotel ? galleryUrls : const [],
         vehicleType:
             _role == UserRole.rider ? _vehicleController.text.trim() : null,
-        plateNumber: _role == UserRole.rider ? _plateController.text.trim() : null,
+        plateNumber:
+            _role == UserRole.rider ? _plateController.text.trim() : null,
       );
 
       await _authService.signUp(

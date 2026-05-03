@@ -22,7 +22,7 @@ class HotelHomeScreen extends StatelessWidget {
     final signedInUid = FirebaseAuth.instance.currentUser?.uid ?? user.uid;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hotel / Shop Home'),
+        title: const Text('Business Home'),
         actions: [
           StreamBuilder<int>(
             stream: _notificationService.unreadCountStream(signedInUid),
@@ -32,10 +32,11 @@ class HotelHomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => NotificationInboxScreen(
-                        userId: signedInUid,
-                        title: 'Notifications',
-                      ),
+                      builder:
+                          (_) => NotificationInboxScreen(
+                            userId: signedInUid,
+                            title: 'Notifications',
+                          ),
                     ),
                   );
                 },
@@ -54,9 +55,26 @@ class HotelHomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Card(
-            child: ListTile(
-              title: Text(user.businessName ?? user.name),
-              subtitle: Text('Contact: ${user.phone}'),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.businessName ?? user.name,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text('Category: ${user.businessCategory ?? 'Business'}'),
+                  Text('Contact: ${user.phone}'),
+                  if ((user.serviceDescription ?? '').trim().isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(user.serviceDescription!),
+                  ],
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -64,21 +82,29 @@ class HotelHomeScreen extends StatelessWidget {
             stream: _notificationService.unreadBreakdownStream(signedInUid),
             builder: (context, snapshot) {
               final counts = snapshot.data ?? const {};
-              final count =
-                  (counts['order'] ?? 0) + (counts['delivery'] ?? 0);
+              final count = (counts['order'] ?? 0) + (counts['delivery'] ?? 0);
               return Card(
                 child: ListTile(
                   leading: const CircleAvatar(
                     child: Icon(Icons.receipt_long_outlined),
                   ),
                   title: const Text('Order Inbox'),
-                  subtitle: const Text('View and update orders from customers.'),
-                  trailing: count > 0
-                      ? NotificationBadge(
-                          count: count,
-                          child: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-                        )
-                      : const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                  subtitle: const Text(
+                    'View and update orders from customers.',
+                  ),
+                  trailing:
+                      count > 0
+                          ? NotificationBadge(
+                            count: count,
+                            child: const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 16,
+                            ),
+                          )
+                          : const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 16,
+                          ),
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -94,8 +120,10 @@ class HotelHomeScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const CircleAvatar(child: Icon(Icons.restaurant_menu)),
-              title: const Text('Manage Menu'),
-              subtitle: const Text('Add menu items, prices, and food photos.'),
+              title: const Text('Manage Listings'),
+              subtitle: const Text(
+                'Add products, service packages, prices, and photos.',
+              ),
               trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
               onTap: () {
                 Navigator.of(context).push(
@@ -118,13 +146,22 @@ class HotelHomeScreen extends StatelessWidget {
                     child: Icon(Icons.chat_bubble_outline),
                   ),
                   title: const Text('Chats'),
-                  subtitle: const Text('Chat with customers who contacted your shop.'),
-                  trailing: count > 0
-                      ? NotificationBadge(
-                          count: count,
-                          child: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-                        )
-                      : const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                  subtitle: const Text(
+                    'Chat with customers who contacted your shop.',
+                  ),
+                  trailing:
+                      count > 0
+                          ? NotificationBadge(
+                            count: count,
+                            child: const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 16,
+                            ),
+                          )
+                          : const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 16,
+                          ),
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(

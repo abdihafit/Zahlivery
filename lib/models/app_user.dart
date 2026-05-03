@@ -21,7 +21,7 @@ extension UserRoleX on UserRole {
       case UserRole.customer:
         return 'Customer';
       case UserRole.hotel:
-        return 'Hotel / Shop';
+        return 'Hotel / Shop / Business';
       case UserRole.rider:
         return 'Rider';
       case UserRole.admin:
@@ -53,6 +53,10 @@ class AppUser {
     required this.phone,
     this.address,
     this.businessName,
+    this.businessCategory,
+    this.serviceDescription,
+    this.bannerImageUrl,
+    this.galleryImageUrls = const [],
     this.vehicleType,
     this.plateNumber,
   });
@@ -64,6 +68,10 @@ class AppUser {
   final String phone;
   final String? address;
   final String? businessName;
+  final String? businessCategory;
+  final String? serviceDescription;
+  final String? bannerImageUrl;
+  final List<String> galleryImageUrls;
   final String? vehicleType;
   final String? plateNumber;
 
@@ -76,6 +84,10 @@ class AppUser {
       'phone': phone,
       'address': address,
       'businessName': businessName,
+      'businessCategory': businessCategory,
+      'serviceDescription': serviceDescription,
+      'bannerImageUrl': bannerImageUrl,
+      'galleryImageUrls': galleryImageUrls,
       'vehicleType': vehicleType,
       'plateNumber': plateNumber,
       'updatedAt': FieldValue.serverTimestamp(),
@@ -91,6 +103,15 @@ class AppUser {
       phone: map['phone'] as String? ?? '',
       address: map['address'] as String?,
       businessName: map['businessName'] as String?,
+      businessCategory: map['businessCategory'] as String?,
+      serviceDescription: map['serviceDescription'] as String?,
+      bannerImageUrl: map['bannerImageUrl'] as String?,
+      galleryImageUrls:
+          (map['galleryImageUrls'] as List<dynamic>? ?? const [])
+              .whereType<String>()
+              .map((url) => url.trim())
+              .where((url) => url.isNotEmpty)
+              .toList(),
       vehicleType: map['vehicleType'] as String?,
       plateNumber: map['plateNumber'] as String?,
     );

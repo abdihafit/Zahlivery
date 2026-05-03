@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Zahlivery</title>
+    <meta
+      name="description"
+      content="Zahlivery customer web app for sign in, browsing businesses, and placing orders."
+    />
+    <meta name="theme-color" content="#6dbe00" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Zahlivery" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+    <link rel="apple-touch-startup-image" href="./icons/icon-512.png" />
+    <link rel="icon" type="image/png" href="./icons/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <nav class="topbar">
+          <div class="brand">
+            <img src="./icons/icon-192.png" alt="Zahlivery logo" class="brand__logo" />
+            <div>
+              <p class="eyebrow">ZAHLIVERY</p>
+              <h1>Customer Portal</h1>
+            </div>
+          </div>
+          <div class="topbar__actions">
+            <button id="installButton" class="button button--ghost" type="button">
+              Add to Home Screen
+            </button>
+            <button id="logoutButton" class="button button--secondary" type="button" hidden>
+              Logout
+            </button>
+          </div>
+        </nav>
+
+        <section class="hero__body">
+          <div class="hero__copy">
+            <div class="badge-row">
+              <span class="badge">Customers</span>
+              <span class="badge">Shops & Hotels</span>
+              <span class="badge">iPhone-ready PWA</span>
+            </div>
+            <h2>Browse menus, create your account, and place real Zahlivery orders.</h2>
+            <p class="hero__text">
+              This web app is a customer-facing version of Zahlivery. Sign up,
+              sign in, browse businesses in your Firebase data, and send orders
+              into the same backend used by the main app.
+            </p>
+            <div class="hero__meta">
+              <span>Sign up as customer</span>
+              <span>Browse live shops</span>
+              <span>Place real orders</span>
+            </div>
+            <div id="statusBanner" class="status-banner" aria-live="polite">
+              Initializing Zahlivery Web...
+            </div>
+          </div>
+
+          <aside class="auth-card">
+            <div class="auth-tabs">
+              <button id="loginTab" class="auth-tab auth-tab--active" type="button">
+                Login
+              </button>
+              <button id="signupTab" class="auth-tab" type="button">
+                Create Account
+              </button>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+              <label class="field">
+                <span>Email</span>
+                <input id="loginEmail" type="email" autocomplete="email" required />
+              </label>
+              <label class="field">
+                <span>Password</span>
+                <input
+                  id="loginPassword"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                />
+              </label>
+              <button class="button button--primary auth-submit" type="submit">
+                Login
+              </button>
+            </form>
+
+            <form id="signupForm" class="auth-form" hidden>
+              <label class="field">
+                <span>Full name</span>
+                <input id="signupName" type="text" autocomplete="name" required />
+              </label>
+              <label class="field">
+                <span>Phone number</span>
+                <input id="signupPhone" type="tel" autocomplete="tel" required />
+              </label>
+              <label class="field">
+                <span>Email address</span>
+                <input id="signupEmail" type="email" autocomplete="email" required />
+              </label>
+              <label class="field">
+                <span>Delivery address</span>
+                <textarea
+                  id="signupAddress"
+                  rows="3"
+                  autocomplete="street-address"
+                  required
+                ></textarea>
+              </label>
+              <label class="field">
+                <span>Password</span>
+                <input
+                  id="signupPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                />
+              </label>
+              <label class="field">
+                <span>Confirm password</span>
+                <input
+                  id="signupConfirmPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                />
+              </label>
+              <button class="button button--primary auth-submit" type="submit">
+                Create Customer Account
+              </button>
+            </form>
+
+            <p id="authMessage" class="auth-message" aria-live="polite"></p>
+          </aside>
+        </section>
+      </header>
+
+      <main class="dashboard">
+        <section class="panel">
+          <div class="panel__header">
+            <div>
+              <p class="eyebrow">Welcome</p>
+              <h3 id="customerName">Guest</h3>
+            </div>
+            <span id="customerRole" class="pill">Customer</span>
+          </div>
+          <div id="profileSummary" class="profile-summary">
+            <p>Sign in to load your customer profile and live Zahlivery data.</p>
+          </div>
+          <div class="quick-actions">
+            <a href="#businessSection" class="quick-card">
+              <strong>Find Shops</strong>
+              <span>Browse businesses and menus</span>
+            </a>
+            <a href="#ordersSection" class="quick-card">
+              <strong>My Orders</strong>
+              <span>Track orders created from the web app</span>
+            </a>
+          </div>
+        </section>
+
+        <section id="businessSection" class="panel">
+          <div class="panel__header">
+            <div>
+              <p class="eyebrow">Businesses</p>
+              <h3>Shops, hotels, and businesses</h3>
+            </div>
+          </div>
+          <div class="toolbar">
+            <label class="field field--inline">
+              <span class="sr-only">Search businesses</span>
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="Search businesses, category, or address"
+              />
+            </label>
+            <label class="field field--inline">
+              <span class="sr-only">Filter businesses</span>
+              <select id="categoryFilter">
+                <option value="all">All categories</option>
+              </select>
+            </label>
+          </div>
+          <div id="businessGrid" class="business-grid"></div>
+        </section>
+
+        <section id="ordersSection" class="panel">
+          <div class="panel__header">
+            <div>
+              <p class="eyebrow">Orders</p>
+              <h3>My orders</h3>
+            </div>
+          </div>
+          <div id="ordersList" class="orders-list">
+            <p class="empty-state">Login to view your Zahlivery orders.</p>
+          </div>
+        </section>
+      </main>
+
+      <aside class="cart-panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Current Cart</p>
+            <h3 id="cartBusinessName">Select a business</h3>
+          </div>
+          <span id="cartCount" class="pill">0 items</span>
+        </div>
+        <div id="cartItems" class="cart-items">
+          <p class="empty-state">
+            Add menu items from a business to prepare an order.
+          </p>
+        </div>
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span>Total</span>
+            <strong id="cartTotal">KSH 0</strong>
+          </div>
+          <button id="placeOrderButton" class="button button--primary" type="button">
+            Place Zahlivery Order
+          </button>
+          <p id="cartMessage" class="cart-message"></p>
+        </div>
+      </aside>
+    </div>
+
+    <template id="businessCardTemplate">
+      <article class="business-card">
+        <div class="business-card__media"></div>
+        <div class="business-card__body">
+          <div class="business-card__topline">
+            <span class="pill business-card__category"></span>
+            <span class="business-card__menu-count"></span>
+          </div>
+          <h4 class="business-card__name"></h4>
+          <p class="business-card__description"></p>
+          <div class="business-card__meta"></div>
+          <div class="business-card__actions">
+            <button class="button button--secondary business-card__view" type="button">
+              View Menu
+            </button>
+          </div>
+          <div class="menu-preview"></div>
+        </div>
+      </article>
+    </template>
+
+    <template id="menuItemTemplate">
+      <article class="menu-item">
+        <div class="menu-item__details">
+          <div class="menu-item__headline">
+            <h5 class="menu-item__name"></h5>
+            <span class="menu-item__price"></span>
+          </div>
+          <p class="menu-item__description"></p>
+        </div>
+        <button class="button button--small button--primary menu-item__add" type="button">
+          Add
+        </button>
+      </article>
+    </template>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

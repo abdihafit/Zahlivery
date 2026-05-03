@@ -12,10 +12,7 @@ import 'rider_list_screen.dart';
 import 'shop_list_screen.dart';
 
 class CustomerHomeScreen extends StatelessWidget {
-  const CustomerHomeScreen({
-    super.key,
-    required this.user,
-  });
+  const CustomerHomeScreen({super.key, required this.user});
 
   final AppUser user;
   static final NotificationService _notificationService = NotificationService();
@@ -36,10 +33,11 @@ class CustomerHomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => NotificationInboxScreen(
-                        userId: signedInUid,
-                        title: 'Notifications',
-                      ),
+                      builder:
+                          (_) => NotificationInboxScreen(
+                            userId: signedInUid,
+                            title: 'Notifications',
+                          ),
                     ),
                   );
                 },
@@ -112,6 +110,28 @@ class CustomerHomeScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: 10),
+          _ActionTile(
+            icon: Icons.local_taxi_outlined,
+            title: 'Book a Ride',
+            subtitle:
+                'See available drivers, review their details, and contact one for your trip.',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder:
+                      (_) => RiderListScreen(
+                        customer: user,
+                        screenTitle: 'Book a Ride',
+                        introTitle: 'Choose your driver',
+                        introSubtitle:
+                            'Browse available drivers, check vehicle details, and contact a rider for pickup.',
+                        primaryActionLabel: 'Book This Ride',
+                      ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
           StreamBuilder<Map<String, int>>(
             stream: _notificationService.unreadBreakdownStream(signedInUid),
             builder: (context, snapshot) {
@@ -167,10 +187,11 @@ class CustomerHomeScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => NotificationInboxScreen(
-                        userId: signedInUid,
-                        title: 'Notifications',
-                      ),
+                      builder:
+                          (_) => NotificationInboxScreen(
+                            userId: signedInUid,
+                            title: 'Notifications',
+                          ),
                     ),
                   );
                 },
@@ -231,12 +252,13 @@ class _ActionTile extends StatelessWidget {
         ),
         title: Text(title),
         subtitle: Text(subtitle),
-        trailing: notificationCount > 0
-            ? NotificationBadge(
-                count: notificationCount,
-                child: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-              )
-            : const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+        trailing:
+            notificationCount > 0
+                ? NotificationBadge(
+                  count: notificationCount,
+                  child: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                )
+                : const Icon(Icons.arrow_forward_ios_rounded, size: 16),
         onTap: onTap,
       ),
     );
